@@ -1,6 +1,8 @@
-// TradingWave data model.
-// Local: SQLite. To move to Postgres, change provider to "postgresql"
-// and point DATABASE_URL at your Postgres instance. Nothing else changes.
+// TradingWave data model. THIS FILE IS THE SOURCE OF TRUTH.
+// Local development: SQLite (DATABASE_URL="file:./dev.db").
+// Hosted (Vercel + Neon): prisma/postgres/schema.prisma is GENERATED from this file.
+// After editing models here run `npm run db:pg-schema` (CI/tests fail if the two drift).
+// Keep models portable: no @db.* native types; JSON is stored as String (text on Postgres).
 
 generator client {
   provider = "prisma-client-js"

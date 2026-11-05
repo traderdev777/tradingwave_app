@@ -1,21 +1,25 @@
 {
   "name": "tradingwave",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "description": "TradingWave: plain-language algo trading for India. Step 3 strategy builder.",
   "engines": {
-    "node": ">=20.9"
+    "node": ">=20.9 <23"
   },
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "node scripts/prisma-generate.mjs && next build",
+    "vercel-build": "node scripts/vercel-build.mjs",
     "start": "next start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
+    "db:pg-schema": "node scripts/prisma-schema.mjs write",
+    "db:pg-schema:check": "node scripts/prisma-schema.mjs check",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "make-admin": "node scripts/make-admin.mjs"
+    "make-admin": "node scripts/make-admin.mjs",
+    "postinstall": "node scripts/prisma-generate.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

@@ -1,0 +1,103 @@
+// GENERATED FILE: do not edit. Source of truth is prisma/schema.prisma.
+// Regenerate with `npm run db:pg-schema`. Used on Vercel (Neon Postgres):
+//   DATABASE_URL           pooled connection, used by the app at runtime
+//   DATABASE_URL_UNPOOLED  direct connection, used by `prisma db push` / migrations
+// scripts/prisma-schema.mjs fills DATABASE_URL_UNPOOLED from POSTGRES_URL_NON_POOLING or DATABASE_URL when absent.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String
+  passwordHash      String
+  role              String    @default("USER") // "USER" | "ADMIN"
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  passwordChangedAt DateTime?
+  sessions          Session[]
+  strategies        Strategy[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  userAgent String?
+  ipHash    String?
+
+  @@index([userId])
+}
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  broker    String?
+  market    String?
+  source    String?
+  ipHash    String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// ---------- Step 3: strategy builder ----------
+// A Strategy is a named container; every change creates a new StrategyVersion.
+// Approved versions are immutable (the API never updates a version after approvedAt is set).
+
+model Strategy {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  status           String            @default("DRAFT") // "DRAFT" | "APPROVED" | "ARCHIVED"
+  currentVersionId String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  versions         StrategyVersion[]
+  events           StrategyEvent[]
+
+  @@index([userId, updatedAt])
+}
+
+model StrategyVersion {
+  id         String    @id @default(cuid())
+  strategyId String
+  strategy   Strategy  @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  version    Int
+  sourceText String
+  dsl        String // JSON (Strategy DSL, schemaVersion 1)
+  summary    String
+  engine     String // "gemini" | "rules" | "manual"
+  validation String // JSON { ok, errors[], warnings[] }
+  approvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([strategyId, version])
+}
+
+model StrategyEvent {
+  id         String   @id @default(cuid())
+  strategyId String
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  userId     String
+  type       String // "created" | "version" | "approved" | "archived" | "restored" | "duplicated_from" | "renamed"
+  version    Int?
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  @@index([strategyId, createdAt])
+}

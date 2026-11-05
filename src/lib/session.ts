@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { db } from "./db";
 import { clientIp, hashIp } from "./hash";
+import { isHttpsRequest } from "./origin";
 import { SESSION_COOKIE, SESSION_TTL_SECONDS, signSessionToken, verifySessionToken } from "./token";
 
 export type CurrentUser = { id: string; email: string; name: string; role: string; createdAt: Date };
@@ -25,8 +26,8 @@ export async function createSession(userId: string) {
   jar.set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    // Secure whenever the app is served over HTTPS (behind a proxy or via APP_URL); plain http://localhost still works.
-    secure: h.get("x-forwarded-proto")?.split(",")[0]?.trim() === "https" || (process.env.APP_URL ?? "").startsWith("https://"),
+    // Secure whenever the app is served over HTTPS; plain http://localhost still works.
+    secure: isHttpsRequest(h),
     path: "/",
     expires: expiresAt,
   });

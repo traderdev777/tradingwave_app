@@ -7,7 +7,10 @@ import "@/styles/app.css";
 import "@/styles/strategy.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_URL || "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.APP_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
+  ),
   title: "TradingWave · Say it. Test it. Trade it.",
   description:
     "Describe a trading strategy in plain words. TradingWave turns it into clear rules you approve, tests it on paper with real Indian costs, then runs it on your own broker account with risk limits.",

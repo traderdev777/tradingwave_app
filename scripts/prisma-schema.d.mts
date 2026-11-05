@@ -1,0 +1,10 @@
+export const root: string;
+export const SQLITE_SCHEMA: string;
+export const POSTGRES_SCHEMA: string;
+export function toPostgresSchema(sqliteText: string): string;
+export function modelBlocks(text: string): string[];
+export function readSchema(rel: string): string;
+export function isPostgresUrl(url: string | undefined): boolean;
+export function pickSchema(env?: Record<string, string | undefined>, dotenvUrl?: string): string;
+export function readDotenvDatabaseUrl(): string | undefined;
+export function resolveDbEnv(env?: Record<string, string | undefined>): Record<string, string | undefined>;

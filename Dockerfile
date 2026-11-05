@@ -4,7 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-cert
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json ./
-RUN npm ci
+# Scripts (postinstall prisma generate) run later in `npm run build`, once the source is copied.
+RUN npm ci --ignore-scripts
 COPY . .
 # DATABASE_URL is only needed so prisma generate can read the schema at build time.
 RUN DATABASE_URL="file:/data/tradingwave.db" npm run build

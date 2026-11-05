@@ -1,6 +1,8 @@
 /**
  * Small in-memory sliding-window rate limiter, keyed per IP + action.
- * Good enough for a single local/server process. Swap for Redis when scaling out.
+ * Good enough for a single local/server process. On Vercel (serverless) each function instance keeps
+ * its own counters, so limits are per instance, not global: an attacker spread across cold starts gets
+ * more attempts. Acceptable for now; swap for a shared store (e.g. Upstash Redis) when scaling out.
  */
 type Bucket = number[];
 const store = new Map<string, Bucket>();

@@ -8,6 +8,7 @@ import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { pickSchema, readDotenvDatabaseUrl, resolveDbEnv } from "./prisma-schema.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const envPath = path.join(root, ".env");
@@ -57,14 +58,20 @@ if (current.length < 32) {
 const prismaCli = path.join(root, "node_modules", "prisma", "build", "index.js");
 function prisma(args) {
   console.log(`→ prisma ${args.join(" ")}`);
-  const r = spawnSync(process.execPath, [prismaCli, ...args], { cwd: root, stdio: "inherit", env: { ...process.env, PRISMA_HIDE_UPDATE_MESSAGE: "1" } });
+  const r = spawnSync(process.execPath, [prismaCli, ...args], { cwd: root, stdio: "inherit", env: prismaEnv });
   if (r.status !== 0) {
     console.error(`✖ prisma ${args.join(" ")} failed`);
     process.exit(r.status ?? 1);
   }
 }
 
-prisma(["generate"]);
-prisma(["db", "push", "--skip-generate"]);
+// Postgres: fill DATABASE_URL_UNPOOLED (the schema's directUrl) when only DATABASE_URL is set.
+const prismaEnv = { ...resolveDbEnv({ DATABASE_URL: readDotenvDatabaseUrl(), ...process.env }), PRISMA_HIDE_UPDATE_MESSAGE: "1" };
+for (const [k, v] of Object.entries(prismaEnv)) if (v === "" || v === undefined) delete prismaEnv[k];
+
+// SQLite (prisma/schema.prisma) unless DATABASE_URL in the env or .env is a postgres:// URL.
+const schema = pickSchema();
+prisma(["generate", "--schema", schema]);
+prisma(["db", "push", "--skip-generate", "--schema", schema]);
 
 console.log("\n✔ Setup complete. Start the app with:  npm run dev  → http://localhost:3000\n");
