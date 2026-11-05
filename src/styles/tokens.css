@@ -1,0 +1,23 @@
+/* TradingWave design tokens v1.0 — light is default, dark via [data-theme="dark"] */
+:root{
+  --tw-night:#070D18; --tw-ink:#0B1424; --tw-paper:#F7F5F0; --tw-mist:#E8ECF3; --tw-slate:#5B6578;
+  --tw-saffron:#F2A33A; --tw-saffron-hover:#E0912A; --tw-saffron-soft:rgba(242,163,58,.14);
+  --tw-profit:#1F9D6B; --tw-loss:#E0484F;
+  --bg:var(--tw-paper); --surface:#FFFFFF; --surface-2:var(--tw-mist); --line:#DCE1EA;
+  --text:var(--tw-ink); --text-2:var(--tw-slate); --accent:var(--tw-saffron); --on-accent:var(--tw-ink);
+  --font-sans:"Manrope",system-ui,sans-serif; --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  --radius-sm:6px; --radius-md:10px; --radius-lg:16px; --radius-xl:24px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px; --space-9:96px;
+  --ease-tide:cubic-bezier(.22,1,.36,1); --dur-fast:180ms; --dur-base:240ms; --dur-slow:320ms;
+  --shadow-1:0 1px 2px rgba(11,20,36,.06),0 1px 1px rgba(11,20,36,.04);
+}
+[data-theme="dark"]{
+  --bg:var(--tw-night); --surface:var(--tw-ink); --surface-2:#121C2E; --line:#1C2740;
+  --text:var(--tw-paper); --text-2:#97A1B3; --profit:#2DBE85; --loss:#F0616A;
+  --shadow-1:none;
+}
+.tw-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
+/* Logo draw-on animation: wrap the mark path with class tw-draw */
+.tw-draw{stroke-dasharray:260;stroke-dashoffset:260;animation:tw-draw 900ms var(--ease-tide) forwards}
+@keyframes tw-draw{to{stroke-dashoffset:0}}

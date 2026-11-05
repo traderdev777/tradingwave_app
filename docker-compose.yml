@@ -1,0 +1,19 @@
+# Optional. Usage:
+#   1) put SESSION_SECRET (and optionally ADMIN_EMAIL) in .env
+#   2) docker compose up --build
+#   3) open http://localhost:3000
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env (run npm run setup once to generate it)}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      DATABASE_URL: file:/data/tradingwave.db
+    volumes:
+      - tradingwave-data:/data
+    restart: unless-stopped
+volumes:
+  tradingwave-data:
