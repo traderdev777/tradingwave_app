@@ -18,7 +18,7 @@ export function SideNav({ isAdmin }: { isAdmin: boolean }) {
   const path = usePathname();
   const items: Item[] = [
     { href: "/app", label: "Dashboard", icon: "dashboard" },
-    { href: "/app/strategies", label: "Strategies", icon: "strategies", soon: true },
+    { href: "/app/strategies", label: "Strategies", icon: "strategies" },
     { href: "/app/paper", label: "Paper trading", icon: "paper", soon: true },
     { href: "/app/brokers", label: "Brokers", icon: "brokers", soon: true },
     { href: "/app/settings", label: "Settings", icon: "settings" },

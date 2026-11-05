@@ -5,7 +5,14 @@ import { requireUser } from "@/lib/session";
 export default async function Dashboard() {
   const user = await requireUser();
   const isAdmin = user.role === "ADMIN";
-  const waitlistCount = isAdmin ? await db.waitlistEntry.count() : 0;
+  const [waitlistCount, statusCounts] = await Promise.all([
+    isAdmin ? db.waitlistEntry.count() : Promise.resolve(0),
+    db.strategy.groupBy({ by: ["status"], where: { userId: user.id }, _count: true }),
+  ]);
+  const sc = (st: string) => statusCounts.find((c) => c.status === st)?._count ?? 0;
+  const drafts = sc("DRAFT");
+  const approved = sc("APPROVED");
+  const hasStrategies = drafts + approved > 0;
   const firstName = user.name.split(/\s+/)[0];
 
   return (
@@ -14,18 +21,23 @@ export default async function Dashboard() {
         <p className="eyebrow">Dashboard</p>
         <h1>{`Welcome, ${firstName}.`}</h1>
         <p className="lede">
-          Your workspace is ready. Strategies, paper trading and broker connections arrive in the next releases.
-          Nothing here is simulated: when there is data, it will be yours.
+          Describe a strategy in plain words and approve the rules we write from it. Paper trading and broker
+          connections arrive in the next releases. Nothing here is simulated: every number is yours.
         </p>
       </header>
 
       <div className="cards">
         <article className="card card--lead">
           <span className="card__n mono">01</span>
-          <h2>Create your first strategy</h2>
+          <h2>{hasStrategies ? "Your strategies" : "Create your first strategy"}</h2>
           <p>Describe an idea in plain words and approve the rules we write from it.</p>
-          <p className="card__status"><span className="dot" /> Coming in the next release (Step 3)</p>
-          <Link className="card__link" href="/app/strategies">What to expect →</Link>
+          <p className="card__status">
+            <span className="dot dot--live" />
+            {`${approved} approved · ${drafts} ${drafts === 1 ? "draft" : "drafts"}`}
+          </p>
+          <Link className="card__link" href={hasStrategies ? "/app/strategies" : "/app/strategies/new"}>
+            {hasStrategies ? "Open strategies →" : "Describe a strategy →"}
+          </Link>
         </article>
         <article className="card">
           <span className="card__n mono">02</span>

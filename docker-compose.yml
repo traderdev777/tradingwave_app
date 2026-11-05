@@ -11,6 +11,9 @@ services:
       SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env (run npm run setup once to generate it)}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       APP_URL: ${APP_URL:-http://localhost:3000}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      LOT_SIZE_OVERRIDES: ${LOT_SIZE_OVERRIDES:-}
       DATABASE_URL: file:/data/tradingwave.db
     volumes:
       - tradingwave-data:/data

@@ -24,7 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </Link>
         <SideNav isAdmin={user.role === "ADMIN"} />
         <div className="side__foot">
-          <span className="tw-tag tw-tag--paper">Step 2 · Foundation</span>
+          <span className="tw-tag tw-tag--paper">Step 3 · Strategy builder</span>
         </div>
       </aside>
       <div className="shell__main">

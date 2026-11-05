@@ -4,6 +4,7 @@ import "@/styles/fonts.css";
 import "@/styles/tokens.css";
 import "@/styles/landing.css";
 import "@/styles/app.css";
+import "@/styles/strategy.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL || "http://localhost:3000"),

@@ -21,6 +21,7 @@ model User {
   updatedAt         DateTime  @updatedAt
   passwordChangedAt DateTime?
   sessions          Session[]
+  strategies        Strategy[]
 }
 
 model Session {
@@ -48,4 +49,52 @@ model WaitlistEntry {
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// ---------- Step 3: strategy builder ----------
+// A Strategy is a named container; every change creates a new StrategyVersion.
+// Approved versions are immutable (the API never updates a version after approvedAt is set).
+
+model Strategy {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  status           String            @default("DRAFT") // "DRAFT" | "APPROVED" | "ARCHIVED"
+  currentVersionId String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  versions         StrategyVersion[]
+  events           StrategyEvent[]
+
+  @@index([userId, updatedAt])
+}
+
+model StrategyVersion {
+  id         String    @id @default(cuid())
+  strategyId String
+  strategy   Strategy  @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  version    Int
+  sourceText String
+  dsl        String // JSON (Strategy DSL, schemaVersion 1)
+  summary    String
+  engine     String // "gemini" | "rules" | "manual"
+  validation String // JSON { ok, errors[], warnings[] }
+  approvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([strategyId, version])
+}
+
+model StrategyEvent {
+  id         String   @id @default(cuid())
+  strategyId String
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  userId     String
+  type       String // "created" | "version" | "approved" | "archived" | "restored" | "duplicated_from" | "renamed"
+  version    Int?
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  @@index([strategyId, createdAt])
 }

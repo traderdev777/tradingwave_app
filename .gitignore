@@ -13,3 +13,4 @@ prisma/*.db*
 coverage/
 .DS_Store
 npm-debug.log*
+.next-*/

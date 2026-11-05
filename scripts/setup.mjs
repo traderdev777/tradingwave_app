@@ -42,6 +42,18 @@ if (current.length < 32) {
   console.log("✔ .env already present, left as is");
 }
 
+// Step 3: make sure the Gemini settings exist in older .env files (left empty = built-in rules engine).
+{
+  const cur = readFileSync(envPath, "utf8");
+  if (!/^GEMINI_API_KEY=/m.test(cur)) {
+    writeFileSync(
+      envPath,
+      `${cur.trimEnd()}\n\n# Optional: Google Gemini key for the strategy builder (https://aistudio.google.com/apikey).\n# Empty = the built-in English rules engine is used.\nGEMINI_API_KEY=""\nGEMINI_MODEL="gemini-2.5-flash"\n`,
+    );
+    console.log("✔ Added empty GEMINI_API_KEY / GEMINI_MODEL lines to .env (optional)");
+  }
+}
+
 const prismaCli = path.join(root, "node_modules", "prisma", "build", "index.js");
 function prisma(args) {
   console.log(`→ prisma ${args.join(" ")}`);

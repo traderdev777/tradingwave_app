@@ -1,8 +1,8 @@
 {
   "name": "tradingwave",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "TradingWave: plain-language algo trading for India. Step 2 foundation.",
+  "description": "TradingWave: plain-language algo trading for India. Step 3 strategy builder.",
   "engines": {
     "node": ">=20.9"
   },
